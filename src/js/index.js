@@ -1,6 +1,6 @@
 import Notiflix from 'notiflix';
 import makeGalleryCard from './gallery-card.hbs';
-import { Pixabay } from './pixabay-api';
+import { Pixabay } from "./pixabay-api";
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const listEl = document.querySelector('.gallery');
