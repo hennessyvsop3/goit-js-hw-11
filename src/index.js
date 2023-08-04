@@ -9,6 +9,10 @@ const loadMoreBtnEl = document.querySelector('.btn-load-more')
 
 
 const pixabay = new Pixabay();
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionDelay: 250,
+  captionsData: 'alt',
+});
 
 const onLoadMoreBtnClick = async () => {
     try {
@@ -20,7 +24,7 @@ const onLoadMoreBtnClick = async () => {
     
         const galleryMarkup = makeGalleryCard(hits)
         listEl.insertAdjacentHTML('beforeend', galleryMarkup)
-        pixabay.lightbox.refresh();
+        lightbox.refresh();
 
         if (totalPage === pixabay.page) {
             removeBtnLoadMore()
@@ -46,6 +50,11 @@ const onSearchFormSubmit = async event => {
     pixabay.searchQuery = searchQuery
     pixabay.page = 1;
 
+    if (!pixabay.query) {
+      Notiflix.Notify.failure('Sorry, enter a valid query. Please try again.');
+      return;
+    }
+
     try{
         
         const response = await pixabay.axiosPhotos()
@@ -55,6 +64,7 @@ const onSearchFormSubmit = async event => {
 
             if(totalHits > 0) {
                 Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+                
             }
 
             if(totalPage === 0) {
@@ -67,13 +77,14 @@ const onSearchFormSubmit = async event => {
             if(totalPage === 1) {
                 const galleryMarkup = makeGalleryCard(hits)
                 listEl.innerHTML = galleryMarkup
+                lightbox.refresh();
                 removeBtnLoadMore()
                 return
             }
             
             const galleryMarkup = makeGalleryCard(hits)
             listEl.innerHTML = galleryMarkup
-            pixabay.lightbox.refresh();
+            lightbox.refresh();
             addBtnLoadMore()
             
     } catch (error) {
@@ -82,15 +93,17 @@ const onSearchFormSubmit = async event => {
 
 }  
 
-const removeBtnLoadMore = (event) => (
-    loadMoreBtnEl.classList.add('is-hidden'),
-    loadMoreBtnEl.removeEventListener('click', onLoadMoreBtnClick),
-    Notiflix.Notify.info('We are sorry, but you have reached the end of search results.'),
-);
+const removeBtnLoadMore = event => {
+  loadMoreBtnEl.classList.add('is-hidden');
+  loadMoreBtnEl.removeEventListener('click', onLoadMoreBtnClick);
+  Notiflix.Notify.info(
+    'We are sorry, but you have reached the end of search results.'
+  );
+};
 
 const addBtnLoadMore = () => {
-    loadMoreBtnEl.classList.remove('is-hidden'),
-    loadMoreBtnEl.addEventListener('click', onLoadMoreBtnClick)
-}
+  loadMoreBtnEl.classList.remove('is-hidden');
+  loadMoreBtnEl.addEventListener('click', onLoadMoreBtnClick);
+};
 
 searchFormEl.addEventListener('submit', onSearchFormSubmit)
