@@ -76,7 +76,6 @@ const onSearchFormSubmit = async event => {
       const galleryMarkup = makeGalleryCard(hits);
       listEl.innerHTML = galleryMarkup;
       lightbox.refresh();
-    //   removeBtnLoadMore();
       return;
     }
 
